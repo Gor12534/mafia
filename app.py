@@ -39,6 +39,11 @@ bot_app.add_handler(CommandHandler("start", start))
 bot_app.add_handler(CallbackQueryHandler(button_handler))
 
 # Initialize the app before handling updates
+@app.get("/")
+async def root():
+    return {"status": "OK", "message": "Bot server is live"}
+
+
 @app.on_event("startup")
 async def on_startup():
     await bot_app.initialize()
