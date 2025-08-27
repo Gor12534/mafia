@@ -3,9 +3,14 @@ import os
 from fastapi import FastAPI, Request
 from telegram import Update, InlineKeyboardButton, InlineKeyboardMarkup, Bot
 from telegram.ext import ApplicationBuilder, ContextTypes, CallbackQueryHandler, CommandHandler
+from dotenv import load_dotenv
 
+load_dotenv()
 TOKEN = os.getenv("BOT_TOKEN")
-bot = Bot(TOKEN)
+
+# Initialize bot and FastAPI app
+bot_app = ApplicationBuilder().token(TOKEN).build()
+bot = bot_app.bot
 app = FastAPI()
 
 # Handlers
@@ -26,13 +31,19 @@ async def button_handler(update: Update, context: ContextTypes.DEFAULT_TYPE):
     elif query.data == "logout":
         await query.edit_message_text("Logged out!")
 
-# Telegram webhook endpoint
-@app.post("/webhook")
+# Add handlers once
+bot_app.add_handler(CommandHandler("start", start))
+bot_app.add_handler(CallbackQueryHandler(button_handler))
+
+# Root route for testing
+@app.get("/")
+async def root():
+    return {"message": "Hello World"}
+
+# Webhook endpoint
+@app.post(f"/webhook/{TOKEN}")
 async def telegram_webhook(req: Request):
     data = await req.json()
     update = Update.de_json(data, bot)
-    app_builder = ApplicationBuilder().token(TOKEN).build()
-    app_builder.add_handler(CommandHandler("start", start))
-    app_builder.add_handler(CallbackQueryHandler(button_handler))
-    await app_builder.process_update(update)
+    await bot_app.process_update(update)
     return {"ok": True}
