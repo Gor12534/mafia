@@ -1,38 +1,30 @@
 import os
-import asyncio
-from aiogram import Bot, Dispatcher
-from aiogram.types import Message, InlineKeyboardMarkup, InlineKeyboardButton, WebAppInfo
-from aiogram.filters import Command
+from dotenv import load_dotenv
+from telegram import Update, InlineKeyboardButton, InlineKeyboardMarkup
+from telegram.ext import ApplicationBuilder, CommandHandler, CallbackQueryHandler, ContextTypes
 
-BOT_TOKEN = os.getenv("BOT_TOKEN", "YOUR_BOT_TOKEN_HERE")
+load_dotenv()
+TOKEN = os.getenv("BOT_TOKEN")
 
-bot = Bot(token=BOT_TOKEN)
-dp = Dispatcher()
+async def start(update: Update, context: ContextTypes.DEFAULT_TYPE):
+    keyboard = [
+        [InlineKeyboardButton("Products", callback_data='products')],
+        [InlineKeyboardButton("Finished / Logout", callback_data='logout')]
+    ]
+    reply_markup = InlineKeyboardMarkup(keyboard)
+    await update.message.reply_text("Welcome! Choose an option:", reply_markup=reply_markup)
 
-CHAT_LINK = "https://t.me/YOUR_GROUP_LINK"
-MINIAPP_URL = MINIAPP_URL
+async def button_handler(update: Update, context: ContextTypes.DEFAULT_TYPE):
+    query = update.callback_query
+    await query.answer()
+    if query.data == 'products':
+        await query.edit_message_text(text="You clicked Products!")
+    elif query.data == 'logout':
+        await query.edit_message_text(text="Logged out!")
 
-@dp.message(Command("start"))
-async def cmd_start(message: Message):
-    text = (
-        "👋 Welcome to Mafia!\n\n"
-        "📜 Rules:\n"
-        "1. The bot assigns roles.\n"
-        "2. Discussion is in the group chat.\n"
-        "3. Mini App is for profile and in-game chat.\n\n"
-        "Click *Play* to join!"
-    )
-
-    keyboard = InlineKeyboardMarkup(inline_keyboard=[
-        [InlineKeyboardButton(text="💬 Group Chat", url=CHAT_LINK)],
-        [InlineKeyboardButton(text="🎮 Play (Mini App)", web_app=WebAppInfo(url=MINIAPP_URL))]
-    ])
-
-    await message.answer(text, reply_markup=keyboard, parse_mode="Markdown")
-
-async def main():
-    print("Bot started...")
-    await dp.start_polling(bot)
-
-if __name__ == "__main__":
-    asyncio.run(main())
+if __name__ == '__main__':
+    app = ApplicationBuilder().token(TOKEN).build()
+    app.add_handler(CommandHandler("start", start))
+    app.add_handler(CallbackQueryHandler(button_handler))
+    print("Bot is running...")
+    app.run_polling()
