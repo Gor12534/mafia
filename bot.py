@@ -1,16 +1,16 @@
 import os
 import asyncio
 from aiogram import Bot, Dispatcher
-from aiogram.filters import Command
 from aiogram.types import Message, InlineKeyboardMarkup, InlineKeyboardButton, WebAppInfo
+from aiogram.filters import Command
 
-BOT_TOKEN = os.getenv("BOT_TOKEN", "8417631546:AAFGGOTf7ckVLAfr0_AGf0SpUADqU44Gj4w")
+BOT_TOKEN = os.getenv("BOT_TOKEN", "YOUR_BOT_TOKEN_HERE")
 
 bot = Bot(token=BOT_TOKEN)
 dp = Dispatcher()
 
 CHAT_LINK = "https://t.me/YOUR_GROUP_LINK"
-MINIAPP_URL = "https://mafia-2lu6.onrender.com"
+MINIAPP_URL = "https://YOUR-RENDER-URL.onrender.com"
 
 @dp.message(Command("start"))
 async def cmd_start(message: Message):
@@ -23,18 +23,12 @@ async def cmd_start(message: Message):
         "Click *Play* to join!"
     )
 
-    keyboard = InlineKeyboardMarkup(
-        inline_keyboard=[
-            [InlineKeyboardButton(text="💬 Group Chat", url=CHAT_LINK)],
-            [InlineKeyboardButton(
-                text="🎮 Play (Mini App)",
-                web_app=WebAppInfo(url=MINIAPP_URL)
-            )]
-        ]
-    )
+    keyboard = InlineKeyboardMarkup(inline_keyboard=[
+        [InlineKeyboardButton(text="💬 Group Chat", url=CHAT_LINK)],
+        [InlineKeyboardButton(text="🎮 Play (Mini App)", web_app=WebAppInfo(url=MINIAPP_URL))]
+    ])
 
     await message.answer(text, reply_markup=keyboard, parse_mode="Markdown")
-
 
 async def main():
     print("Bot started...")
