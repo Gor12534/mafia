@@ -46,6 +46,12 @@ bot_app.add_handler(CallbackQueryHandler(button_handler))
 # -------------------
 # FastAPI webhook
 # -------------------
+
+@app.get("/")
+async def root():
+    return {"status": "OK", "message": "Bot server is live"}
+
+
 @app.post(f"/webhook/{TOKEN}")
 async def telegram_webhook(req: Request):
     data = await req.json()
@@ -64,7 +70,5 @@ async def on_startup():
     await bot_app.bot.set_webhook(webhook_url)
     logger.info(f"Webhook set to: {webhook_url}")
 
-# @app.get("/")
-# async def root():
-#     return {"status": "OK", "message": "Bot server is live"}
+
 
