@@ -78,13 +78,28 @@ async def root():
 
 
 
+# @app.post(f"/webhook/{TOKEN}")
+# async def telegram_webhook(req: Request):
+#     try:
+#         data = await req.json()
+#         logger.info(f"Received update: {data}")
+#         # CHANGE: use from_dict instead of de_json
+#         update = Update.from_dict(data)
+#         await bot_app.process_update(update)
+#         return {"ok": True}
+#     except Exception as e:
+#         logger.exception("Error handling update")
+#         return {"ok": False, "error": str(e)}
+
 @app.post(f"/webhook/{TOKEN}")
 async def telegram_webhook(req: Request):
     try:
         data = await req.json()
         logger.info(f"Received update: {data}")
-        # CHANGE: use from_dict instead of de_json
-        update = Update.from_dict(data)
+
+        # Correct way in v21.11
+        update = Update.de_json(data, bot_app.bot)
+
         await bot_app.process_update(update)
         return {"ok": True}
     except Exception as e:
