@@ -1,4 +1,7 @@
-from bot import run_bot
+from fastapi import FastAPI
 
-if __name__ == "__main__":
-    run_bot()
+app = FastAPI()
+
+@app.get("/")
+async def root():
+    return {"message": "Hello World"}
