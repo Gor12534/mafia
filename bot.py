@@ -10,7 +10,7 @@ bot = Bot(token=BOT_TOKEN)
 dp = Dispatcher()
 
 CHAT_LINK = "https://t.me/YOUR_GROUP_LINK"
-MINIAPP_URL = "https://YOUR-RENDER-URL.onrender.com"
+MINIAPP_URL = MINIAPP_URL
 
 @dp.message(Command("start"))
 async def cmd_start(message: Message):
