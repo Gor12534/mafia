@@ -1,17 +1,15 @@
-from fastapi import FastAPI
-from fastapi.responses import HTMLResponse
+from fastapi import FastAPI, Request
+import os
+from telegram import Update
+from telegram.ext import ApplicationBuilder, ContextTypes
 
 app = FastAPI()
+BOT_TOKEN = os.getenv("BOT_TOKEN")
+application = ApplicationBuilder().token(BOT_TOKEN).build()
 
-@app.get("/")
-def home():
-    return HTMLResponse("""
-    <html>
-        <head><title>Mafia Mini App</title></head>
-        <body style="font-family: sans-serif; text-align: center; margin-top: 100px;">
-            <h1>🎭 Mafia Mini App</h1>
-            <p>Welcome! This is just a placeholder page.</p>
-            <p>Later we will add profile and chat here.</p>
-        </body>
-    </html>
-    """)
+@app.post("/webhook")
+async def webhook(req: Request):
+    data = await req.json()
+    update = Update.de_json(data, application.bot)
+    await application.update_queue.put(update)
+    return {"status": "ok"}
