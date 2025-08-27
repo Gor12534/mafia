@@ -4,5 +4,5 @@ pydantic==1.10.12
 python-telegram-bot==21.11.1
 aiofiles
 aiohttp
-git+https://github.com/tiangolo/fastapi.git@main#egg=fastapi
+fastapi==0.118.2
 
